@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/ui/Navbar";
 import PageTransition from "@/components/ui/PageTransition";
+import Footer from "@/components/ui/Footer";
 
 const geist = Geist({ subsets: ["latin"] });
 
@@ -23,6 +24,8 @@ export default function RootLayout({
         <main>
           <PageTransition>{children}</PageTransition>
         </main>
+
+        <Footer />
       </body>
     </html>
   );
