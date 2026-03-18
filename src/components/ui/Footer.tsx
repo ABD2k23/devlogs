@@ -9,6 +9,7 @@ const Footer = () => {
         <Link
           className="text-white"
           href={"https://www.instagram.com/abd.dev.web/"}
+          target="_blank"
         >
           Muhammad Abdullah
         </Link>
