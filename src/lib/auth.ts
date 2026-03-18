@@ -34,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           // So we fallback to generating from their name
           const username =
             (profile?.login as string) ||
-            user.name?.toLowerCase().replace(/\s+/g, "") +
+            (user.name ?? "user").toLowerCase().replace(/\s+/g, "") +
               Math.floor(Math.random() * 1000);
 
           await db.update(users).set({ username }).where(eq(users.id, user.id));
