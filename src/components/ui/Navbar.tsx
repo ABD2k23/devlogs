@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth, signIn, signOut } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auth";
 import { LayoutDashboard, Rss, User, LogOut, LogIn } from "lucide-react";
 
 export default async function Navbar() {
@@ -56,18 +56,14 @@ export default async function Navbar() {
             </form>
           </>
         ) : (
-          // Sign in
-          <form
-            action={async () => {
-              "use server";
-              await signIn("github");
-            }}
+          // Just a link to sign-in page now
+          <Link
+            href="/sign-in"
+            className="flex items-center gap-2 text-sm bg-white text-black px-3 py-2 rounded-lg font-medium hover:bg-white/90 transition"
           >
-            <button className="flex items-center gap-2 text-sm bg-white text-black px-3 py-2 rounded-lg font-medium hover:bg-white/90 transition">
-              <LogIn size={16} />
-              <span className="hidden sm:inline">Sign in with GitHub</span>
-            </button>
-          </form>
+            <LogIn size={16} />
+            <span className="hidden sm:inline">Sign in</span>
+          </Link>
         )}
       </div>
     </nav>

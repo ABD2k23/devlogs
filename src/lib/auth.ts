@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "./db/index";
 import { users, accounts, sessions } from "./db/schema";
@@ -11,11 +12,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     accountsTable: accounts,
     sessionsTable: sessions,
   }),
-  providers: [GitHub],
+  providers: [GitHub, Google],
   callbacks: {
     async session({ session, user }) {
-      // Attach the user id and username to the session
-      // so we can access it anywhere in the app
       session.user.id = user.id;
       session.user.username = (user as { username?: string }).username ?? "";
       return session;
@@ -23,9 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   events: {
     async signIn({ user, profile }) {
-      // When someone signs in, if they don't have a username yet
-      // grab it from their GitHub profile and save it
-      if (user.id && profile?.login) {
+      if (user.id) {
         const existingUser = await db
           .select()
           .from(users)
@@ -33,10 +30,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .then((res) => res[0]);
 
         if (existingUser && !existingUser.username) {
-          await db
-            .update(users)
-            .set({ username: profile.login as string })
-            .where(eq(users.id, user.id));
+          // GitHub has profile.login, Google doesn't
+          // So we fallback to generating from their name
+          const username =
+            (profile?.login as string) ||
+            user.name?.toLowerCase().replace(/\s+/g, "") +
+              Math.floor(Math.random() * 1000);
+
+          await db.update(users).set({ username }).where(eq(users.id, user.id));
         }
       }
     },
